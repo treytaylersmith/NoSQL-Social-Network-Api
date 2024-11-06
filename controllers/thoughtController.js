@@ -1,4 +1,5 @@
 const { Thought, Reaction, User } = require("../models");
+const {findOneAndUpdate} = require('mongoose');
 
 module.exports = {
   async getThoughts(req, res) {
@@ -103,22 +104,23 @@ module.exports = {
   
   async removeReaction(req, res) {
     try {
-      const reaction = await Reaction.findOneAndUpdate(
+      const thought = await Thought.findOneAndUpdate(
         { _id: req.params.thoughtId },
-        { $pull: { reaction: { reactionId: req.params.reactionId } } },
+        { $pull: { reactions: { reactionId: req.params.reactionId } } }, 
         { runValidators: true, new: true }
       );
-
-      if (!reaction) {
+  
+      if (!thought) {
         return res
           .status(404)
-          .json({ message: 'No reaction found with that ID :(' });
+          .json({ message: 'No thought found with that ID :(' });
       }
-
-      res.json(reaction);
+  
+      res.json(thought);
     } catch (err) {
       res.status(500).json(err);
+      console.log(err);
     }
-  },
+  }
 
 };
